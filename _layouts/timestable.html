@@ -1,0 +1,145 @@
+---
+layout: default
+---
+
+
+<div class="container text-center py-5 my-5">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <form id="timestable">
+                <div class="lead display-5 py-5 fw-bold" id="question"><span id="first"></span> X <span
+                        id="second"></span></div>
+                <div class="py-3">
+                    <input id="response" type="number" step="1" name="response" value="" autofocus
+                        placeholder="Réponse" />
+                </div>
+                <smal class="text-muted" id="elapsedTime">0</smal>
+
+                <div>
+                    <input class="btn btn-primary mx-auto d-none" type="submit" id="validate" value="Vérifier" />
+                    <div id="resultSuccess" class="d-none">
+                        <div id="success" class="text-success-emphasis">Bravo! ☺</div>
+                        <input class="btn btn-secondary" type="reset" id="reset" value="Nouvelle Multiplication" />
+                    </div>
+                    <div id="resultMissed" class="d-none text-danger-emphasis">Non! ce n'est pas <span
+                            id="wrongValue"></span> ☹
+                    </div>
+
+                </div>
+            </form>
+        </div>
+        <div class="col-md-2">
+            Score: <span class="fw-bold" id="score">0</span>
+            <div id="noErrors" class="d-block">Aucune erreur!</div>
+            <div id="errorLog" class="text-danger-emphasis d-none"><span id="errorCount">0</span> erreurs</div>
+            <div id="log" class="pt-3"></div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    'use strict';
+    var score = 0;
+
+    const SUCCESS_POINTS = 1;
+    const MISSED_POINTS = -3
+    var autoredirect;
+    var responseTimer;
+
+
+    document.addEventListener("DOMContentLoaded", function () {
+        init()
+    });
+
+    function getRandomInt(max) {
+        return Math.floor(Math.random() * max + 1);
+    }
+
+    function updateScore(points) {
+        document.querySelector("#score").textContent = parseInt(document.querySelector("#score").textContent) + points
+    }
+    function initTimer() {
+        // Set the date we're counting down to
+        var countDownDate = new Date().getTime();
+        document.getElementById('elapsedTime').innerHTML = 0;
+        clearInterval(responseTimer)
+        // Update the count down every 1 second
+        var start = Date.now();
+        responseTimer = setInterval(function () {
+            document.getElementById('elapsedTime').innerHTML = Math.floor((Date.now() - start) / 1000);
+        }, 1000);
+    }
+
+    function initQuizz() {
+        var first = getRandomInt(10);
+        var second;
+        if (first > 5) {
+            second = getRandomInt(5);
+        } else {
+            second = getRandomInt(10);
+        }
+        initTimer();
+        clearTimeout(autoredirect);
+
+        // TODO: single parent class to condition visibile/hidden display
+        document.querySelector("#validate").classList.replace("d-none", "d-block");
+        document.querySelector("#resultMissed").classList.replace("d-block", "d-none");
+        document.querySelector("#resultSuccess").classList.replace("d-block", "d-none");
+        document.querySelector("#elapsedTime").classList.replace("d-none", "d-block");
+        document.querySelector("#first").textContent = first;
+        document.querySelector("#second").textContent = second;
+        document.querySelector("#response").disabled = false;
+        document.querySelector("#response").focus();
+    }
+
+    function init() {
+        initQuizz();
+        document.querySelector("#timestable").addEventListener("submit", function (event) {
+            event.preventDefault();
+            let expectedResult = document.querySelector("#first").textContent * document.querySelector("#second").textContent
+            let response = document.querySelector("input[name='response']");
+
+            if (response.value !== "") {
+                let questionLog = document.querySelector("#log");
+                const newEntry = document.createElement("div");
+                const textContent = document.createTextNode(document.querySelector("#question").textContent + " (" + document.querySelector("#elapsedTime").textContent + "s)");
+                newEntry.appendChild(textContent);
+
+                if (expectedResult == response.value) {
+                    newEntry.classList.add("text-success-emphasis")
+                    document.querySelector("#validate").classList.replace("d-block", "d-none");
+                    document.querySelector("#resultMissed").classList.replace("d-block", "d-none");
+                    document.querySelector("#resultSuccess").classList.replace("d-none", "d-block");
+                    document.querySelector("#response").disabled = true;
+                    updateScore(SUCCESS_POINTS)
+                    document.querySelector("#reset").focus();
+                    document.querySelector("#elapsedTime").classList.replace("d-block", "d-none");
+                    autoredirect = setTimeout(() => {
+                        initQuizz()
+                    }, "3000");
+
+                } else {
+                    newEntry.classList.add("text-danger-emphasis")
+                    document.querySelector("#wrongValue").textContent = response.value;
+                    document.querySelector("#resultMissed").classList.replace("d-none", "d-block");
+                    updateScore(MISSED_POINTS)
+                    // TODO: store all results instead
+                    document.querySelector("#errorCount").textContent = parseInt(document.querySelector("#errorCount").textContent) + 1
+                    document.querySelector("#errorLog").classList.replace("d-none", "d-block");
+                    document.querySelector("#noErrors").classList.replace("d-none", "d-block");
+
+                    response.value = ""
+                    response.focus()
+                }
+                questionLog.prepend(newEntry)
+            }
+
+        });
+        document.querySelector("#timestable").addEventListener("reset", function (event) {
+            initQuizz();
+        });
+
+
+    }
+
+</script>
