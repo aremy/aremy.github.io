@@ -28,21 +28,20 @@ function initTimer() {
     }, 1000);
 }
 
-/**
- * Initialize the form - call after each answer
+/** 
+ * Initialize the form - call after each correct answer
  */
 function initQuizz() {
-    var first = getRandomInt(10);
-    var second;
-    if (first > 5) {
-        second = getRandomInt(5);
-    } else {
-        second = getRandomInt(10);
-    }
+    var selectedTableChecboxes = [...document.querySelectorAll("input[name='allowedTables[]']:checked")]
+    var selectedTables  = selectedTableChecboxes.reduce(function (a,c) { a.push(c.value);return a}, [])
+
+    let randomTableIndex = getRandomInt(selectedTables.length)
+    var first = selectedTables[randomTableIndex - 1];
+    var second = getRandomInt(10);
     initTimer();
     clearTimeout(autoredirect);
 
-    // TODO: single parent class to condition visibile/hidden display
+    // TODO: single parent class to condition visibile/hidden display?
     document.querySelector("#validate").classList.replace("d-none", "d-block");
     document.querySelector("#resultMissed").classList.replace("d-block", "d-none");
     document.querySelector("#resultSuccess").classList.replace("d-block", "d-none");
@@ -51,6 +50,36 @@ function initQuizz() {
     document.querySelector("#second").textContent = second;
     document.querySelector("#response").disabled = false;
     document.querySelector("#response").focus();
+}
+
+/**
+ * What to do in case of correct answer
+ */
+function correctAnswer() {
+    document.querySelectorAll(".hideIfCorrectAnswer").forEach(element => element.classList.replace("d-block", "d-none"))
+    document.querySelectorAll(".showIfCorrectAnswer").forEach(element => element.classList.replace("d-none", "d-block"))
+    document.querySelector("#response").disabled = true;
+    updateScore(SUCCESS_POINTS)
+    document.querySelector("#reset").focus();
+    document.querySelector("#elapsedTime").classList.replace("d-block", "d-none");
+    autoredirect = setTimeout(() => {
+        initQuizz()
+    }, "3000");
+}
+
+/**
+ * What to do in case of wrong answer
+ * 
+ * @param {number} responseValue 
+ */
+function wrongAnswer(responseValue) {
+    document.querySelector("#wrongValue").textContent = responseValue;
+    document.querySelectorAll(".showIfWrongAnswer").forEach(element => element.classList.replace("d-none", "d-block"))
+    updateScore(MISSED_POINTS)
+    // TODO: store all results instead
+    document.querySelector("#errorCount").textContent = parseInt(document.querySelector("#errorCount").textContent) + 1
+    document.querySelector("#errorLog").classList.replace("d-none", "d-block");
+    document.querySelector("#noErrors").classList.replace("d-block", "d-none");
 }
 
 /**
@@ -64,34 +93,18 @@ function checkAnswer(responseValue, expectedResult) {
     if (responseValue === "") return;
     let questionLog = document.querySelector("#log div");
     if (questionLog.childElementCount === 0) {
-        document.querySelector("#answersLog").classList.replace("d-none", "d-block");
+        document.querySelectorAll("#answersLog").forEach(element => element.classList.replace("d-none", "d-block"));
     }
     const newEntry = document.createElement("div");
     const textContent = document.createTextNode(document.querySelector("#question").textContent + " (" + document.querySelector("#elapsedTime").textContent + "s)");
     newEntry.appendChild(textContent);
 
     if (expectedResult == responseValue) {
-        newEntry.classList.add("text-success-emphasis")
-        document.querySelector("#validate").classList.replace("d-block", "d-none");
-        document.querySelector("#resultMissed").classList.replace("d-block", "d-none");
-        document.querySelector("#resultSuccess").classList.replace("d-none", "d-block");
-        document.querySelector("#response").disabled = true;
-        updateScore(SUCCESS_POINTS)
-        document.querySelector("#reset").focus();
-        document.querySelector("#elapsedTime").classList.replace("d-block", "d-none");
-        autoredirect = setTimeout(() => {
-            initQuizz()
-        }, "3000");
-
+        newEntry.classList.add("text-success-emphasis");
+        correctAnswer();
     } else {
-        newEntry.classList.add("text-danger-emphasis")
-        document.querySelector("#wrongValue").textContent = responseValue;
-        document.querySelector("#resultMissed").classList.replace("d-none", "d-block");
-        updateScore(MISSED_POINTS)
-        // TODO: store all results instead
-        document.querySelector("#errorCount").textContent = parseInt(document.querySelector("#errorCount").textContent) + 1
-        document.querySelector("#errorLog").classList.replace("d-none", "d-block");
-        document.querySelector("#noErrors").classList.replace("d-none", "d-block");
+        newEntry.classList.add("text-danger-emphasis");
+        wrongAnswer(responseValue);
     }
     questionLog.prepend(newEntry)
 }

@@ -1,18 +1,70 @@
 ---
 layout: default
 ---
+
 <div class="offcanvas offcanvas-end" tabindex="-1" id="toolbar" aria-labelledby="offcanvasLabel">
     <div class="offcanvas-header">
         <h5 class="offcanvas-title" id="offcanvasLabel">Table de Multiplication</h5>
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
-    <div class="offcanvas-body">
-        <a class="link-secondary link-underline link-underline-opacity-0" data-bs-toggle="collapse" href="#log"
-            role="button" aria-expanded="false" aria-controls="log">
-            Historique des réponses
-        </a>
-        <div class="collapse pt-3" id="log">
-            <div class="card card-body"></div>
+    <div class="offcanvas-body d-flex flex-column">
+        <div class="form-check mb-3 d-none"> <!-- later maybe; also: take time into account in the score, have a max response time -->
+            <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" checked disabled>
+            <label class="form-check-label" for="flexCheckDefault">
+                Ordre Aléatoire
+            </label>
+        </div>
+        Générer des questions pour les tables de:
+        <div class="btn-group mb-3" role="group" aria-label="Tables de Multiplication à activer">
+            <input type="checkbox" class="btn-check" id="btncheck1" autocomplete="off" name="allowedTables[]" value="1"
+                checked>
+            <label class="btn btn-outline-primary" for="btncheck1">1</label>
+
+            <input type="checkbox" class="btn-check" id="btncheck2" autocomplete="off" name="allowedTables[]" value="2"
+                checked>
+            <label class="btn btn-outline-primary" for="btncheck2">2</label>
+
+            <input type="checkbox" class="btn-check" id="btncheck3" autocomplete="off" name="allowedTables[]" value="3"
+                checked>
+            <label class="btn btn-outline-primary" for="btncheck3">3</label>
+
+            <input type="checkbox" class="btn-check" id="btncheck4" autocomplete="off" name="allowedTables[]" value="4"
+                checked>
+            <label class="btn btn-outline-primary" for="btncheck4">4</label>
+
+            <input type="checkbox" class="btn-check" id="btncheck5" autocomplete="off" name="allowedTables[]" value="5"
+                checked>
+            <label class="btn btn-outline-primary" for="btncheck5">5</label>
+
+            <input type="checkbox" class="btn-check" id="btncheck6" autocomplete="off" name="allowedTables[]" value="6"
+                checked>
+            <label class="btn btn-outline-primary" for="btncheck6">6</label>
+
+            <input type="checkbox" class="btn-check" id="btncheck7" autocomplete="off" name="allowedTables[]" value="7"
+                checked>
+            <label class="btn btn-outline-primary" for="btncheck7">7</label>
+
+            <input type="checkbox" class="btn-check" id="btncheck8" autocomplete="off" name="allowedTables[]" value="8"
+                checked>
+            <label class="btn btn-outline-primary" for="btncheck8">8</label>
+
+            <input type="checkbox" class="btn-check" id="btncheck9" autocomplete="off" name="allowedTables[]" value="9"
+                checked>
+            <label class="btn btn-outline-primary" for="btncheck9">9</label>
+
+            <input type="checkbox" class="btn-check" id="btncheck10" autocomplete="off" name="allowedTables[]"
+                value="10" checked>
+            <label class="btn btn-outline-primary" for="btncheck10">10</label>
+        </div>
+
+        <div class="d-none answersLog">
+            <a class="link-secondary link-underline link-underline-opacity-0" data-bs-toggle="collapse" href="#log"
+                role="button" aria-expanded="false" aria-controls="log">
+                Historique des réponses
+            </a>
+            <div class="collapse pt-3" id="log">
+                <div class="card card-body"></div>
+            </div>
         </div>
     </div>
 </div>
@@ -20,24 +72,24 @@ layout: default
 <div class="container text-center py-5 my-5">
     <div class="row">
         <div class="col-md-8 offset-md-2">
-            <form id="timestable">
+            <form id="timestable" class="question">
                 <div class="mb-3">
-                    <div class="lead display-5 py-5 fw-bold" id="question"><span id="first"></span> X <span
+                    <div class="lead display-5 py-5 fw-bold" id="question"><span id="first"></span> x <span
                             id="second"></span></div>
                     <div class="py-3">
                         <input id="response" type="number" step="1" name="response" value="" autofocus
                             autocomplete="off" placeholder="Réponse" />
                     </div>
-                    <small class="text-muted" id="elapsedTime">0</small>
+                    <small class="text-muted d-block hideIfCorrectAnswer" id="elapsedTime">0</small>
                 </div>
                 <div>
-                    <input class="btn btn-primary mx-auto d-none" type="submit" id="validate" value="Vérifier" />
-                    <div id="resultSuccess" class="d-none">
-                        <div id="success" class="text-success-emphasis mb-3">Bravo! ☺</div>
+                    <input class="btn btn-primary mx-auto d-none hideIfCorrectAnswer" type="submit" id="validate" value="Vérifier" />
+                    <div id="resultSuccess" class="d-none showIfCorrectAnswer">
+                        <div id="success" class="mb-3"><span class="text-success-emphasis">Bravo!</span> 😄</div>
                         <input class="btn btn-secondary btn-sm" type="reset" id="reset"
                             value="Nouvelle Multiplication" />
                     </div>
-                    <div id="resultMissed" class="d-none text-danger-emphasis">Non! ce n'est pas <span
+                    <div id="resultMissed" class="d-none text-danger-emphasis hideIfCorrectAnswer showIfWrongAnswer">Non! ce n'est pas <span
                             id="wrongValue"></span> ☹
                     </div>
 
@@ -46,10 +98,10 @@ layout: default
         </div>
         <div class="col-md-2">
             Score: <span class="fw-bold" id="score">0</span>
-
-            <div id="answersLog" class="d-none">
-                <div id="noErrors" class="d-block">Aucune erreur!</div>
-                <div id="errorLog" class="text-danger-emphasis d-none"><span id="errorCount">0</span> erreurs</div>
+            <div id="noErrors" class="d-block">Aucune erreur!</div>
+            <div class="d-none answersLog showIfWrongAnswer">
+                
+                <div id="errorLog" class="text-danger-emphasis d-none"><span id="errorCount">0</span> erreur(s)</div>
             </div>
             <a class="d-block link-secondary link-underline link-underline-opacity-0" data-bs-toggle="offcanvas"
                 href="#toolbar" role="button" aria-controls="offcanvasExample">
