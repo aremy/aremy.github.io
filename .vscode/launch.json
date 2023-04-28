@@ -1,0 +1,22 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch localhost",
+            "type": "firefox",
+            "request": "launch",
+            "reAttach": true,
+            "url": "http://localhost:4000/index.html",
+            "pathMappings": [
+                {
+                    "url": "http://localhost:4000/timestable.html",
+                    "path": "${workspaceFolder}/_layouts/timestable.html"
+                },
+                {
+                    "url": "http://localhost:4000",
+                    "path": "${workspaceFolder}/_layouts/index.html"
+                }
+            ]
+        }
+    ]
+}
