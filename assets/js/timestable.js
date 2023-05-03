@@ -9,8 +9,11 @@ var responseTimer;
 
 
 function getRandomInt(max) {
-    return Math.floor(Math.random() * max + 1);
+    return Math.floor(Math.min(Math.random() * max + 1, max));
 }
+//module.exports = { getRandomInt };
+
+export { getRandomInt };
 
 function updateScore(points) {
     document.querySelector("#score").textContent = parseInt(document.querySelector("#score").textContent) + points

@@ -1,7 +1,70 @@
 ---
-layout: default
+layout: base
 ---
 
-<div class="container my-5">
-  <h1>Hello, world!</h1>
+<style>
+  .card:hover {
+    background-color: var(--bs-tertiary-bg);
+  }
+</style>
+
+<div class="container px-5 my-5">
+  {{ content }}
+
+  <div class="row">
+    <div class="col-md-8 px-0">
+      <h1 class="display-4">Hello, world!</h1>
+      <p class="lead my-3">Original catch phrase.</p>
+    </div>
+    <div class="col-md-4 px-0">
+      test
+    </div>
+  </div>
+  <hr />
+  <div class="row row-cols-1 row-cols-md-3 g-4"> 
+      {%- if site.posts.size > 0 -%}
+        {%- if page.list_title -%}
+        <h2 class="post-list-heading">{{ page.list_title }}</h2>
+        {%- endif -%}
+        {%- assign date_format = site.date_format | default: "%b %-d, %Y" -%}
+        {%- for post in site.posts -%}
+        <div class="col">
+          <div class="card h-100">
+            
+            {% if post.image %}
+            <img src="{{ '/assets/img/'|append: post.image |append: '.webp'|relative_url }}" class="card-img-top rounded p-2" alt="...">
+            {%endif %}
+          
+            <div class="card-body">
+              <h3 class="card-title"><a class="stretched-link text-reset link-underline link-underline-opacity-0" href="{{ post.url | relative_url }}">{{ post.title | escape }}</a></h3>
+              <p class="card-text text-truncate">{{ post.excerpt }}</p>
+            </div>
+            <div class="card-footer">
+              <p class="card-text"><small class="text-body-secondary">{{ post.date | date: date_format }}</small></p>
+            
+            </div>
+          
+          
+          </div>
+        </div>
+
+          {%- endfor -%}       
+      {%- endif -%}
+      
+      <!-- Posts per date/month -->
+      {% comment %}
+      {% for post in site.posts %}
+        {% assign currentdate = post.date | date: "%B %Y" %}
+        {% if currentdate != date %}
+          {% unless forloop.first %}</ul>{% endunless %}
+          <h1 id="y{{post.date | date: "%Y"}}">{{ currentdate }}</h1>
+          <ul>
+          {% assign date = currentdate %}
+        {% endif %}
+          <li><a href="{{ post.url }}">{{ post.title }}</a></li>
+        {% if forloop.last %}</ul>{% endif %}
+      {% endfor %}
+      {% endcomment %}
+    </div>
+  </div>
 </div>
