@@ -9,12 +9,22 @@
 
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                 <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="true">Toys</a>
+                    <ul class="dropdown-menu dropdown-menu-end" data-bs-popper="static">
+                        {% for toy in site.toys %}
+                        <li><a class="dropdown-item" href="{{toy.url}}">{{toy.title}}</a></li>
+                        {%- endfor -%}
+                    </ul>
+                </li>
+                
+                <li class="nav-item dropdown">
                     <button class="btn btn-link nav-link py-2 px-0 px-lg-2 dropdown-toggle d-flex align-items-center"
                         id="bd-theme" type="button" aria-expanded="false" data-bs-toggle="dropdown"
                         data-bs-display="static" aria-label="Toggle theme (auto)">
                         <i class="bi bi-circle-half theme-icon-active"></i>
                         <span class="d-lg-none ms-2" id="bd-theme-text">Toggle theme</span>
                     </button>
+                    
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bd-theme-text">
                         <li>
                             <button type="button" class="dropdown-item d-flex align-items-center"
