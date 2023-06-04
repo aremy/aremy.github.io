@@ -3,7 +3,7 @@
 title:  "A toy for Reviewing Multiplication Tables"
 #date:   2019-12-09 14:54:54 +0100
 categories: [javascript,toy]
-
+image: board
 ---
 
 A toy to help learn/rehearse multipliation tables
