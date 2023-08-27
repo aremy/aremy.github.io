@@ -1,6 +1,9 @@
 {
-    "name": "",
-    "short_name": "",
+    "name": "Nothing",
+    "short_name": "Nothing",
+    "description": "Exploring, Learning, Playing",
+    "scope": "/",
+    "start_url": "/?source=pwa",
     "icons": [
         {
             "src": "/android-chrome-192x192.png",
@@ -13,7 +16,16 @@
             "type": "image/png"
         }
     ],
-    "theme_color": "#ffffff",
-    "background_color": "#ffffff",
-    "display": "standalone"
+    "theme_color": "#212529",
+    "background_color": "#212529",
+    "display": "standalone",
+    "shortcuts": [
+        {
+          "name": "Timestable",
+          "short_name": "Timestable",
+          "description": "Reviewe your timestables",
+          "url": "/toys/timestable.html?source=pwa",
+          "icons": [{ "src": "/android-chrome-192x192.png", "sizes": "192x192" }]
+        }
+    ]
 }
